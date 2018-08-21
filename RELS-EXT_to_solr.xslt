@@ -76,6 +76,13 @@
       <xsl:param name="type"/>
       <xsl:param name="value"/>
 
+    <xsl:variable name="dateValue">
+      <xsl:call-template name="get_ISO8601_date">
+        <xsl:with-param name="date" select="$value"/>
+        <xsl:with-param name="pid" select="$PID"/>
+        <xsl:with-param name="datastream" select="'RELS-EXT'"/>
+      </xsl:call-template>
+    </xsl:variable>
       <!-- Prevent multiple generating multiple instances of single-valued fields
       by tracking things in a HashSet -->
       <!-- The method java.util.HashSet.add will return false when the value is
@@ -98,6 +105,16 @@
                 <xsl:value-of select="$value"/>
               </field>
             </xsl:when>
+            <xsl:when test="@rdf:datatype = 'http://www.w3.org/2001/XMLSchema#dateTime'">
+              <xsl:if test="not(normalize-space($dateValue)='')">
+                <field>
+                  <xsl:attribute name="name">
+                    <xsl:value-of select="concat($prefix, local-name(), '_', $type, '_dt')"/>
+                  </xsl:attribute>
+                  <xsl:value-of select="$dateValue"/>
+                </field>
+              </xsl:if>
+            </xsl:when>
             <xsl:when test="floor($value) = $value">
               <field>
                 <xsl:attribute name="name">
@@ -115,6 +132,16 @@
             </xsl:attribute>
             <xsl:value-of select="$value"/>
           </field>
+          <xsl:if test="@rdf:datatype = 'http://www.w3.org/2001/XMLSchema#dateTime'">
+            <xsl:if test="not(normalize-space($dateValue)='')">
+              <field>
+                <xsl:attribute name="name">
+                  <xsl:value-of select="concat($prefix, local-name(), '_', $type, '_mdt')"/>
+                </xsl:attribute>
+                <xsl:value-of select="$dateValue"/>
+              </field>
+            </xsl:if>
+          </xsl:if>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:template>
