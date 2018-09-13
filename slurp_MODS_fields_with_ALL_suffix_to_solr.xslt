@@ -68,4 +68,5 @@
          </field>
        </xsl:if>
      </xsl:template>
+  <xsl:template match="text()" mode="slurp_all_suffix"/>
 </xsl:stylesheet>
