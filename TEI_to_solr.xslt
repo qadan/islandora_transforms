@@ -43,7 +43,7 @@
     <xsl:for-each select="$content//tei:text[text()]">
       <field>
         <xsl:attribute name="name">
-          <xsl:value-of select="concat($prefix, 'text', $suffix)"/>
+          <xsl:value-of select="concat($prefix, 'text', '_mt')"/>
         </xsl:attribute>
         <xsl:value-of select="normalize-space(.)"/>
       </field>
@@ -53,7 +53,7 @@
     <xsl:for-each select="$content//tei:text/tei:body[text()]">
       <field>
         <xsl:attribute name="name">
-          <xsl:value-of select="concat($prefix, 'body', $suffix)"/>
+          <xsl:value-of select="concat($prefix, 'body', '_mt')"/>
         </xsl:attribute>
         <xsl:value-of select="normalize-space(.)"/>
       </field>
