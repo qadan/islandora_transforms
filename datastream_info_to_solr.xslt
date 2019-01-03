@@ -40,7 +40,7 @@
             <xsl:text>_</xsl:text>
             <xsl:value-of select="$id"/>
             <xsl:text>_</xsl:text>
-            <xsl:value-of select="$element/foxml:contentDigest/@TYPE"/>
+            <xsl:value-of select="translate($element/foxml:contentDigest/@TYPE, '-', '_')"/>
             <xsl:text>_checksum_ms</xsl:text>
           </xsl:attribute>
           <xsl:value-of select="normalize-space($element/foxml:contentDigest/@DIGEST)"/>
