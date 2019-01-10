@@ -32,6 +32,21 @@
     <xsl:param name="id" select="$element/../@ID"/>
     <xsl:param name="prefix">fedora_datastream_version</xsl:param>
 
+    <xsl:if test="string($index_checksums) = 'true'">
+      <xsl:if test="$element/foxml:contentDigest">
+        <field>
+          <xsl:attribute name="name">
+            <xsl:value-of select="$prefix"/>
+            <xsl:text>_</xsl:text>
+            <xsl:value-of select="$id"/>
+            <xsl:text>_</xsl:text>
+            <xsl:value-of select="translate($element/foxml:contentDigest/@TYPE, '-', '_')"/>
+            <xsl:text>_checksum_ms</xsl:text>
+          </xsl:attribute>
+          <xsl:value-of select="normalize-space($element/foxml:contentDigest/@DIGEST)"/>
+        </field>
+      </xsl:if>
+    </xsl:if>
     <xsl:for-each select="$element/@*">
       <field>
         <xsl:attribute name="name">
