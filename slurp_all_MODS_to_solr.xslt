@@ -286,6 +286,18 @@
         <xsl:with-param name="node" select="$node"/>
       </xsl:call-template>
     </xsl:if>
+
+    <!-- Look for @xml:lang tags too. -->
+    <xsl:if test="@xml:lang">
+      <xsl:call-template name="mods_authority_fork">
+        <xsl:with-param name="prefix" select="concat($prefix, 'lang_', translate(@xml:lang, $uppercase, $lowercase), '_')"/>
+        <xsl:with-param name="suffix" select="$suffix"/>
+        <xsl:with-param name="value" select="$value"/>
+        <xsl:with-param name="pid" select="$pid"/>
+        <xsl:with-param name="datastream" select="$datastream"/>
+        <xsl:with-param name="node" select="$node"/>
+      </xsl:call-template>
+    </xsl:if>
   </xsl:template>
 
   <!-- Handle the actual indexing of the majority of MODS elements, including
