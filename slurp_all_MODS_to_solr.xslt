@@ -154,41 +154,43 @@
   <!-- Intercept names with role terms, so we can create copies of the fields
     including the role term in the name of generated fields. (Hurray, additional
     specificity!) -->
-  <xsl:template match="mods:name[mods:role/mods:roleTerm]" mode="slurping_MODS">
-    <xsl:param name="prefix"/>
-    <xsl:param name="suffix"/>
-    <xsl:param name="pid">not provided</xsl:param>
-    <xsl:param name="datastream">not provided</xsl:param>
-    <xsl:variable name="lowercase" select="'abcdefghijklmnopqrstuvwxyz_'" />
-    <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ '" />
+  <xsl:if test="$mods_fork_on_roles">
+    <xsl:template match="mods:name[mods:role/mods:roleTerm]" mode="slurping_MODS">
+      <xsl:param name="prefix"/>
+      <xsl:param name="suffix"/>
+      <xsl:param name="pid">not provided</xsl:param>
+      <xsl:param name="datastream">not provided</xsl:param>
+      <xsl:variable name="lowercase" select="'abcdefghijklmnopqrstuvwxyz_'" />
+      <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ '" />
 
-    <xsl:variable name="base_prefix">
-      <xsl:value-of select="concat($prefix, local-name(), '_')"/>
-      <xsl:if test="@type">
-        <xsl:value-of select="concat(translate(@type, ' ', '_'), '_')"/>
-      </xsl:if>
-    </xsl:variable>
-    <xsl:for-each select="mods:role/mods:roleTerm">
-      <xsl:variable name="this_prefix" select="concat($base_prefix, translate(normalize-space(.), $uppercase, $lowercase), '_')"/>
+      <xsl:variable name="base_prefix">
+        <xsl:value-of select="concat($prefix, local-name(), '_')"/>
+        <xsl:if test="@type">
+          <xsl:value-of select="concat(translate(@type, ' ', '_'), '_')"/>
+        </xsl:if>
+      </xsl:variable>
+      <xsl:for-each select="mods:role/mods:roleTerm">
+        <xsl:variable name="this_prefix" select="concat($base_prefix, translate(normalize-space(.), $uppercase, $lowercase), '_')"/>
+
+        <xsl:call-template name="mods_language_fork">
+          <xsl:with-param name="prefix" select="$this_prefix"/>
+          <xsl:with-param name="suffix" select="$suffix"/>
+          <xsl:with-param name="value" select="normalize-space(text())"/>
+          <xsl:with-param name="pid" select="$pid"/>
+          <xsl:with-param name="datastream" select="$datastream"/>
+          <xsl:with-param name="node" select="../.."/>
+        </xsl:call-template>
+      </xsl:for-each>
 
       <xsl:call-template name="mods_language_fork">
-        <xsl:with-param name="prefix" select="$this_prefix"/>
+        <xsl:with-param name="prefix" select="$base_prefix"/>
         <xsl:with-param name="suffix" select="$suffix"/>
         <xsl:with-param name="value" select="normalize-space(text())"/>
         <xsl:with-param name="pid" select="$pid"/>
         <xsl:with-param name="datastream" select="$datastream"/>
-        <xsl:with-param name="node" select="../.."/>
       </xsl:call-template>
-    </xsl:for-each>
-
-    <xsl:call-template name="mods_language_fork">
-      <xsl:with-param name="prefix" select="$base_prefix"/>
-      <xsl:with-param name="suffix" select="$suffix"/>
-      <xsl:with-param name="value" select="normalize-space(text())"/>
-      <xsl:with-param name="pid" select="$pid"/>
-      <xsl:with-param name="datastream" select="$datastream"/>
-    </xsl:call-template>
-  </xsl:template>
+    </xsl:template>
+  </xsl:if>
 
   <!-- Fields are duplicated for authority because searches across authorities are common. -->
   <xsl:template name="mods_authority_fork">
@@ -211,7 +213,7 @@
     </xsl:call-template>
 
     <!-- Fields are duplicated for authority because searches across authorities are common. -->
-    <xsl:if test="@authority">
+    <xsl:if test="$mods_fork_on_authority and @authority">
       <xsl:call-template name="general_mods_field">
         <xsl:with-param name="prefix" select="concat($prefix, 'authority_', translate(@authority, $uppercase, $lowercase), '_')"/>
         <xsl:with-param name="suffix" select="$suffix"/>
@@ -276,7 +278,7 @@
     </xsl:call-template>
 
     <!-- Fields are duplicated for authority because searches across authorities are common. -->
-    <xsl:if test="@lang">
+    <xsl:if test="$mods_fork_on_language and @lang">
       <xsl:call-template name="mods_authority_fork">
         <xsl:with-param name="prefix" select="concat($prefix, 'lang_', translate(@lang, $uppercase, $lowercase), '_')"/>
         <xsl:with-param name="suffix" select="$suffix"/>
@@ -288,7 +290,7 @@
     </xsl:if>
 
     <!-- Look for @xml:lang tags too. -->
-    <xsl:if test="@xml:lang">
+    <xsl:if test="$mods_fork_on_language and @xml:lang">
       <xsl:call-template name="mods_authority_fork">
         <xsl:with-param name="prefix" select="concat($prefix, 'lang_', translate(@xml:lang, $uppercase, $lowercase), '_')"/>
         <xsl:with-param name="suffix" select="$suffix"/>
